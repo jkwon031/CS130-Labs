@@ -22,12 +22,14 @@ Render_World::~Render_World()
 // to ensure that hit.dist>=small_t.
 Hit Render_World::Closest_Intersection(const Ray& ray)
 {
-    TODO;
+   // TODO;
     double  min_t = std::numeric_limits<double>::max();
-    Hit close;
+    Hit close{};
     for(unsigned int i = 0; i < objects.size(); i++){
-	Hit h1 = objects[i]->Intersection(ray, h1.part);
-	if((h1.dist <  min_t) &&(h1.dist > small_t)){
+      //for(Object* i : objects){
+	Hit h1 = objects[i]->Intersection(ray,-1);
+	//Hit h1 = i->Intersection(ray, -1);
+	if((h1.object != NULL) && (h1.dist <  min_t) &&(h1.dist >= small_t)){
 		min_t = h1.dist;
 		close = h1;
 	}
@@ -38,8 +40,10 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
 // set up the initial view ray and call
 void Render_World::Render_Pixel(const ivec2& pixel_index)
 {
-    // set up the initial view ray here
-    Ray ray = Ray(camera.position,(camera.World_Position(pixel_index) - camera.position).normalized());
+    //set up the initial view ray here
+    Ray ray(camera.position,(camera.World_Position(pixel_index) - camera.position).normalized());
+   //vec3 u = camera.World_Position(pixel_index) - camera.position;
+   // Ray ray(camera.position, u);
     vec3 color=Cast_Ray(ray,1);
     camera.Set_Pixel(pixel_index,Pixel_Color(color));
 }
@@ -59,13 +63,26 @@ void Render_World::Render()
 vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
 {
     vec3 color;
-    TODO; // determine the color here
+   // TODO; // determine the color here
+    
+    Hit h1 = Closest_Intersection(ray);
+    vec3 int_pt = ray.endpoint + h1.dist * ray.direction;
+    //Ray temp;
+   // vec3 temp_vec = temp.Point(h1.dist);
+    if(h1.object != NULL){
+	//ray.Point(h1.dist);
+	color = h1.object->material_shader->Shade_Surface(ray, int_pt, h1.object->Normal(int_pt, h1.part), recursion_depth);
+    }else{
+	Ray temp;
+	vec3 temp_vec = temp.Point(h1.dist);
+	color = background_shader->Shade_Surface(temp, temp_vec, /*h1.object->Normal(temp_vec, h1.object->number_parts)*/ temp_vec, recursion_depth);	
+    }
     return color;
 }
 
 void Render_World::Initialize_Hierarchy()
 {
-    TODO; // Fill in hierarchy.entries; there should be one entry for
+   // TODO; // Fill in hierarchy.entries; there should be one entry for
     // each part of each object.
 
     hierarchy.Reorder_Entries();
