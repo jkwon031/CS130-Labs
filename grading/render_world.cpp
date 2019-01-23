@@ -41,7 +41,9 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
 void Render_World::Render_Pixel(const ivec2& pixel_index)
 {
     //set up the initial view ray here
-    Ray ray(camera.position,(camera.World_Position(pixel_index) - camera.position).normalized());
+    Ray ray;
+    ray.endpoint = camera.position;
+    ray.direction = (camera.World_Position(pixel_index) - camera.position).normalized();
    //vec3 u = camera.World_Position(pixel_index) - camera.position;
    // Ray ray(camera.position, u);
     vec3 color=Cast_Ray(ray,1);
@@ -66,23 +68,23 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
    // TODO; // determine the color here
     
     Hit h1 = Closest_Intersection(ray);
-    vec3 int_pt = ray.endpoint + h1.dist * ray.direction;
+    //vec3 int_pt = ray.endpoint + h1.dist * ray.direction;
     //Ray temp;
    // vec3 temp_vec = temp.Point(h1.dist);
     if(h1.object != NULL){
 	//ray.Point(h1.dist);
-	color = h1.object->material_shader->Shade_Surface(ray, int_pt, h1.object->Normal(int_pt, h1.part), recursion_depth);
+	 color = h1.object->material_shader->Shade_Surface(ray, ray.Point(h1.dist), h1.object->Normal(ray.Point(h1.dist),-1), recursion_depth);
+	//color = h1.object->material_shader->Shade_Surface(ray, int_pt, h1.object->Normal(int_pt, h1.part), recursion_depth);
     }else{
-	Ray temp;
-	vec3 temp_vec = temp.Point(h1.dist);
-	color = background_shader->Shade_Surface(temp, temp_vec, /*h1.object->Normal(temp_vec, h1.object->number_parts)*/ temp_vec, recursion_depth);	
+	vec3 temp_vec = vec3(0, 0, 0);
+	color = background_shader->Shade_Surface(ray, temp_vec, temp_vec, recursion_depth);	
     }
     return color;
 }
 
 void Render_World::Initialize_Hierarchy()
 {
-   // TODO; // Fill in hierarchy.entries; there should be one entry for
+    TODO; // Fill in hierarchy.entries; there should be one entry for
     // each part of each object.
 
     hierarchy.Reorder_Entries();
