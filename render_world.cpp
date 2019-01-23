@@ -23,13 +23,16 @@ Render_World::~Render_World()
 Hit Render_World::Closest_Intersection(const Ray& ray)
 {
     TODO;
-    int min_t = std::numeric_limits<int>::max();
-	
-    for(int i = 0; i < objects.size(); i++){
-	Hit h1 = objects[i]-->Intersection(ray, );
- 
+    double  min_t = std::numeric_limits<double>::max();
+    Hit close;
+    for(unsigned int i = 0; i < objects.size(); i++){
+	Hit h1 = objects[i]->Intersection(ray, h1.part);
+	if((h1.dist <  min_t) &&(h1.dist > small_t)){
+		min_t = h1.dist;
+		close = h1;
+	}
     }
-    return {};
+    return close;
 }
 
 // set up the initial view ray and call
