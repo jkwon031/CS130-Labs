@@ -73,7 +73,7 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
    // vec3 temp_vec = temp.Point(h1.dist);
     if(h1.object != NULL){
 	//ray.Point(h1.dist);
-	 color = h1.object->material_shader->Shade_Surface(ray, ray.Point(h1.dist), h1.object->Normal(ray.Point(h1.dist),-1), recursion_depth);
+	 color = h1.object->material_shader->Shade_Surface(ray, ray.Point(h1.dist), h1.object->Normal(ray.Point(h1.dist),h1.part), recursion_depth);
 	//color = h1.object->material_shader->Shade_Surface(ray, int_pt, h1.object->Normal(int_pt, h1.part), recursion_depth);
     }else{
 	vec3 temp_vec = vec3(0, 0, 0);
